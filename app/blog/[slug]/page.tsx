@@ -1,13 +1,27 @@
 import { getPostBySlug, getAllPosts } from '@/lib/mdx'
 import { MDXRemote } from 'next-mdx-remote/rsc'
+import { Metadata } from 'next'
 
-// Define correct params type
-type Props = {
-  params: {
-    slug: string
+// Correct type for App Router pages
+type PageParams = {
+  slug: string
+}
+
+// Generate metadata for the page
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: PageParams 
+}): Promise<Metadata> {
+  const { frontmatter } = await getPostBySlug('blog', params.slug)
+  
+  return {
+    title: frontmatter.title,
+    description: frontmatter.description,
   }
 }
 
+// Generate static params for all blog posts
 export async function generateStaticParams() {
   const posts = await getAllPosts('blog')
   return posts.map((post) => ({
@@ -15,7 +29,12 @@ export async function generateStaticParams() {
   }))
 }
 
-export default async function BlogPost({ params }: Props) {
+// Page component with proper typing
+export default async function BlogPost({ 
+  params 
+}: { 
+  params: PageParams 
+}) {
   const { frontmatter, content } = await getPostBySlug('blog', params.slug)
 
   return (
