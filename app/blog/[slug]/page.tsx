@@ -1,6 +1,13 @@
 import { getPostBySlug, getAllPosts } from '@/lib/mdx'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
+// Define correct params type
+type Props = {
+  params: {
+    slug: string
+  }
+}
+
 export async function generateStaticParams() {
   const posts = await getAllPosts('blog')
   return posts.map((post) => ({
@@ -8,11 +15,7 @@ export async function generateStaticParams() {
   }))
 }
 
-export default async function BlogPost({
-  params,
-}: {
-  params: { slug: string }
-}) {
+export default async function BlogPost({ params }: Props) {
   const { frontmatter, content } = await getPostBySlug('blog', params.slug)
 
   return (
